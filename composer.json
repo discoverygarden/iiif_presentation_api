@@ -1,0 +1,8 @@
+{
+    "name": "discoverygarden/iiif_presentation_api",
+    "description": "Generates IIIF Presentation API manifests for Drupal entities.",
+    "type": "drupal-module",
+    "require": {},
+    "license": "GPL-3.0-only"
+}
+
