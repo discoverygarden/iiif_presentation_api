@@ -19,6 +19,14 @@ abstract class NormalizerBase extends SerializationNormalizerBase {
   /**
    * {@inheritDoc}
    */
+  public function normalize($object, $format = NULL, array $context = []) {
+    // XXX: No-op fallback. We expect other implementers to define normalizers
+    // with a higher priority.
+  }
+
+  /**
+   * {@inheritDoc}
+   */
   public function supportsDenormalization($data, $type, $format = NULL) {
     // Not denormalizable.
     return FALSE;
