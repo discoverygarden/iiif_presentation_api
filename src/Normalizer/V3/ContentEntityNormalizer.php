@@ -4,12 +4,16 @@ namespace Drupal\iiif_presentation_api\Normalizer\V3;
 
 use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Entity\ContentEntityInterface;
+use Drupal\Core\Routing\RouteProviderInterface;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\iiif_presentation_api\Normalizer\EntityUriTrait;
 
 /**
  * Normalizer for content entities.
  */
 class ContentEntityNormalizer extends NormalizerBase {
+
+  use EntityUriTrait;
 
   /**
    * {@inheritDoc}
@@ -28,9 +32,12 @@ class ContentEntityNormalizer extends NormalizerBase {
    *
    * @param \Drupal\Core\Session\AccountInterface $user
    *   The current user.
+   * @param \Drupal\Core\Routing\RouteProviderInterface $route_provider
+   *   The route provider service.
    */
-  public function __construct(AccountInterface $user) {
+  public function __construct(AccountInterface $user, RouteProviderInterface $route_provider) {
     $this->user = $user;
+    $this->setRouteProvider($route_provider);
   }
 
   /**
@@ -39,7 +46,7 @@ class ContentEntityNormalizer extends NormalizerBase {
   public function normalize($object, $format = NULL, array $context = []) {
 
     $normalized = [];
-    if (empty($context)) {
+    if (!isset($context['base-depth'])) {
       $context['base-depth'] = TRUE;
       $normalized['@context'] = 'http://iiif.io/api/presentation/3/context.json';
     }
@@ -50,7 +57,7 @@ class ContentEntityNormalizer extends NormalizerBase {
       'id' => $this->getEntityUri($object, $context),
       'type' => $context['base-depth'] ? 'Manifest' : 'Canvas',
       'label' => [
-        $object->language()->getId() => [$object->label()],
+        'none' => [$object->label()],
       ],
     ];
 
@@ -84,7 +91,7 @@ class ContentEntityNormalizer extends NormalizerBase {
    * @return array
    *   The normalized representation of the entity.
    */
-  protected function normalizeEntityFields(ContentEntityInterface $object, string $format, array $context, array $normalized) {
+  protected function normalizeEntityFields(ContentEntityInterface $object, string $format, array $context, array $normalized): array {
     $this->addCacheableDependency($context, $object);
     foreach ($object->getFields() as $field) {
       $access = $field->access('view', $context['account'], TRUE);
