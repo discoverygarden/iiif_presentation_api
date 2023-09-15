@@ -32,12 +32,9 @@ class ContentEntityNormalizer extends NormalizerBase {
    *
    * @param \Drupal\Core\Session\AccountInterface $user
    *   The current user.
-   * @param \Drupal\Core\Routing\RouteProviderInterface $route_provider
-   *   The route provider service.
    */
-  public function __construct(AccountInterface $user, RouteProviderInterface $route_provider) {
+  public function __construct(AccountInterface $user) {
     $this->user = $user;
-    $this->setRouteProvider($route_provider);
   }
 
   /**

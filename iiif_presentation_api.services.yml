@@ -7,7 +7,7 @@ services:
     class: 'Drupal\iiif_presentation_api\Normalizer\V3\ContentEntityNormalizer'
     tags:
       - { name: normalizer, priority: 10 }
-    arguments: ['@current_user', '@router.route_provider']
+    arguments: ['@current_user']
   serializer.normalizer.iiif_presentation_api.iiif_p_v3.field_item_list:
     class: 'Drupal\iiif_presentation_api\Normalizer\V3\FieldItemListNormalizer'
     tags:
