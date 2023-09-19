@@ -4,7 +4,6 @@ namespace Drupal\iiif_presentation_api\Normalizer\V3;
 
 use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Entity\ContentEntityInterface;
-use Drupal\Core\Routing\RouteProviderInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\iiif_presentation_api\Normalizer\EntityUriTrait;
 
