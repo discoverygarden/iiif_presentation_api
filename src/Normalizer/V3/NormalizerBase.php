@@ -25,7 +25,7 @@ abstract class NormalizerBase extends SerializationNormalizerBase {
   /**
    * {@inheritDoc}
    */
-  public function supportsDenormalization($data, $type, $format = NULL) {
+  public function supportsDenormalization($data, $type, ?string $format = NULL, array $context = []) : bool {
     // Not denormalizable.
     return FALSE;
   }
