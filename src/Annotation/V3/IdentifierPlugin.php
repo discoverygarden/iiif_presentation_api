@@ -11,6 +11,11 @@ use Drupal\Component\Annotation\Plugin;
  */
 class IdentifierPlugin extends Plugin {
 
+  /**
+   * The plugin ID.
+   *
+   * @var string
+   */
   public string $id;
 
 }
