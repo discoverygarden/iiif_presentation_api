@@ -42,6 +42,9 @@ class ImageBodyEvent extends Event {
    *   The body to add.
    */
   public function addBody(array $body) : void {
+    if (!$body) {
+      return;
+    }
     $this->bodies[] = $body;
   }
 
