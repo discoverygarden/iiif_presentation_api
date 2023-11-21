@@ -7,8 +7,14 @@ use Drupal\file\FileInterface;
 use Drupal\iiif_presentation_api\Event\V3\ImageBodyEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
+/**
+ * IIIF Image API body generator.
+ */
 class BaseImageBodyEventSubscriber implements EventSubscriberInterface {
 
+  /**
+   * Constructor.
+   */
   public function __construct(
     protected PluginManagerInterface $idPluginManager
   ) {
@@ -20,23 +26,43 @@ class BaseImageBodyEventSubscriber implements EventSubscriberInterface {
   public static function getSubscribedEvents() {
     return [
       ImageBodyEvent::class => [
-        ['baseBody', 100],
-        ['imageV1Body', 55],
-        ['imageV2Body', 50],
-        ['imageV3Body', 45],
+        ['imageV3Body', 100],
+        ['imageV2Body', 75],
+        ['imageV1Body', 50],
+        ['baseBody', 25],
       ],
     ];
   }
 
+  /**
+   * Event callback; build base body without IIIF Image API.
+   */
   public function baseBody(ImageBodyEvent $event) : void {
     $file = $event->getImage();
     $event->addBody([
       'id' => $file->createFileUrl(FALSE),
       'type' => 'Image',
       'format' => $file->getMimeType(),
+      'service' => [],
     ]);
   }
 
+  /**
+   * Build out a body.
+   *
+   * @param string|null $slug
+   *   A URL slug for the endpoint. If provided, should have an `{identifier}`
+   *   portion that we will replace with an ID.
+   * @param \Drupal\file\FileInterface $file
+   *   The file for which to generate a bod.
+   * @param array $extra
+   *   An associative array of extra values to be set in the body.
+   *
+   * @return array
+   *   The body.
+   *
+   * @throws \Drupal\Component\Plugin\Exception\PluginException
+   */
   protected function getBody(?string $slug, FileInterface $file, array $extra = []) : array {
     if (!$slug) {
       return [];
@@ -48,6 +74,7 @@ class BaseImageBodyEventSubscriber implements EventSubscriberInterface {
     ]);
     return [
       'id' => "$base_id/full/full/0/default.jpg",
+      'type' => 'Image',
       'format' => 'image/jpeg',
       'service' => [
         [
@@ -65,6 +92,9 @@ class BaseImageBodyEventSubscriber implements EventSubscriberInterface {
     ];
   }
 
+  /**
+   * Event callback; build body for IIIF Image API v1.
+   */
   public function imageV1Body(ImageBodyEvent $event) : void {
     $event->addBody($this->getBody(
       getenv('IIIF_IMAGE_V1_SLUG'),
@@ -75,6 +105,10 @@ class BaseImageBodyEventSubscriber implements EventSubscriberInterface {
       ],
     ));
   }
+
+  /**
+   * Event callback; build body for IIIF Image API v2.
+   */
   public function imageV2Body(ImageBodyEvent $event) : void {
     $event->addBody($this->getBody(
       getenv('IIIF_IMAGE_V2_SLUG'),
@@ -85,6 +119,10 @@ class BaseImageBodyEventSubscriber implements EventSubscriberInterface {
       ],
     ));
   }
+
+  /**
+   * Event callback; build body for IIIF Image API v3.
+   */
   public function imageV3Body(ImageBodyEvent $event) : void {
     $event->addBody($this->getBody(
       getenv('IIIF_IMAGE_V3_SLUG'),

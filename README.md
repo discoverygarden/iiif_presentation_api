@@ -25,6 +25,17 @@ provided normalizers.
 For any content entity that should be exposed the format will need to be
 configured as [documented by Drupal][1].
 
+There are some environment variables to help integrate with IIIF Image APIs, in particular:
+
+| Variable             | Description                                                                                       |
+|----------------------|---------------------------------------------------------------------------------------------------|
+| `IIIF_IMAGE_V1_SLUG` | Slug to a IIIF v1 endpoint, containing `{identifier}`, which will be replaced with an identifier. |
+| `IIIF_IMAGE_V2_SLUG` | Slug to a IIIF v2 endpoint, containing `{identifier}`, which will be replaced with an identifier. |
+| `IIIF_IMAGE_V3_SLUG` | Slug to a IIIF v3 endpoint, containing `{identifier}`, which will be replaced with an identifier. |
+| `IIIF_IMAGE_ID_PLUGIN` | The ID of a plugin to use to transform IDs. |
+
+Presently, we indicate `level2` compliance for each IIIF Image API endpoint.
+
 ## Troubleshooting/Issues
 
 Having problems or solved one? contact
