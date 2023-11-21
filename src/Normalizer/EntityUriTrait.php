@@ -26,7 +26,7 @@ trait EntityUriTrait {
   protected function getEntityUri(EntityInterface $entity, array $context = []): string {
     // Some entity types don't provide a canonical link template.
     if ($entity->isNew()) {
-      return '';
+      throw new \LogicException('Normalizing reference to unsaved entity is not possible.');
     }
 
     $route_name = 'rest.entity.' . $entity->getEntityTypeId() . '.GET';
@@ -37,7 +37,7 @@ trait EntityUriTrait {
       $url = Url::fromRoute('rest.entity.' . $entity->getEntityTypeId() . '.GET', [$entity->getEntityTypeId() => $entity->id()]);
     }
     else {
-      return '';
+      throw new \LogicException("Unable to generate URL to {$entity->getEntityTypeId()} entity.");
     }
 
     $url->setAbsolute();
