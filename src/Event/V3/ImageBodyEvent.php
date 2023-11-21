@@ -10,6 +10,11 @@ use Drupal\file\FileInterface;
  */
 class ImageBodyEvent extends Event {
 
+  /**
+   * The bodies added to the event.
+   *
+   * @var array
+   */
   protected array $bodies = [];
 
   /**

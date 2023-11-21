@@ -78,15 +78,8 @@ class BaseImageBodyEventSubscriber implements EventSubscriberInterface {
       'format' => 'image/jpeg',
       'service' => [
         [
+          // TODO: Add in auth in some manner.
           'id' => $base_id,
-//          'service' => [
-//            [
-//              // TODO: Define the route.
-//              '@id' => Url::fromRoute(),
-//              '@type' => 'AuthCookieService1',
-//              'profile' => 'http://iiif.io/api/auth/1/kiosk',
-//            ]
-//          ],
         ] + $extra,
       ],
     ];
@@ -101,7 +94,7 @@ class BaseImageBodyEventSubscriber implements EventSubscriberInterface {
       $event->getImage(),
       [
         'type' => 'ImageService1',
-        'profile' => 'level2'
+        'profile' => 'level2',
       ],
     ));
   }
@@ -115,7 +108,7 @@ class BaseImageBodyEventSubscriber implements EventSubscriberInterface {
       $event->getImage(),
       [
         'type' => 'ImageService2',
-        'profile' => 'level2'
+        'profile' => 'level2',
       ],
     ));
   }
@@ -129,7 +122,7 @@ class BaseImageBodyEventSubscriber implements EventSubscriberInterface {
       $event->getImage(),
       [
         'type' => 'ImageService3',
-        'profile' => 'level2'
+        'profile' => 'level2',
       ],
     ));
   }
