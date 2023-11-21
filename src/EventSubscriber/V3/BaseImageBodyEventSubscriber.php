@@ -78,7 +78,7 @@ class BaseImageBodyEventSubscriber implements EventSubscriberInterface {
       'format' => 'image/jpeg',
       'service' => [
         [
-          // TODO: Add in auth in some manner.
+          // @todo Add in auth in some manner.
           'id' => $base_id,
         ] + $extra,
       ],
