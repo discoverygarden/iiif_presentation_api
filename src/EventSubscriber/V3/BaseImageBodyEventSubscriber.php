@@ -29,7 +29,7 @@ class BaseImageBodyEventSubscriber implements EventSubscriberInterface {
         ['imageV3Body', 100],
         ['imageV2Body', 75],
         ['imageV1Body', 50],
-        ['baseBody', 25],
+        ['baseBody', 0],
       ],
     ];
   }

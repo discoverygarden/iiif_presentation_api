@@ -87,7 +87,7 @@ class ContentEntityExtrasEvent extends Event {
    *   The extra data.
    */
   public function addExtras(string $type, array $extras) : self {
-    $this->extras[$type] = array_merge($this->extras[$type], $extras);
+    $this->extras[$type] = array_merge($this->extras[$type] ?? [], $extras);
     return $this;
   }
 
