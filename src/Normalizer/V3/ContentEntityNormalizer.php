@@ -6,7 +6,9 @@ use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Url;
+use Drupal\iiif_presentation_api\Event\V3\ContentEntityExtrasEvent;
 use Drupal\iiif_presentation_api\Normalizer\EntityUriTrait;
+use Psr\EventDispatcher\EventDispatcherInterface;
 
 /**
  * Normalizer for content entities.
@@ -21,20 +23,13 @@ class ContentEntityNormalizer extends NormalizerBase {
   protected $supportedInterfaceOrClass = ContentEntityInterface::class;
 
   /**
-   * The current user.
-   *
-   * @var \Drupal\Core\Session\AccountInterface
+   * Constructor.
    */
-  protected AccountInterface $user;
+  public function __construct(
+    protected AccountInterface $user,
+    protected EventDispatcherInterface $eventDispatcher,
+  ) {
 
-  /**
-   * Constructor for the ContentEntityNormalizer.
-   *
-   * @param \Drupal\Core\Session\AccountInterface $user
-   *   The current user.
-   */
-  public function __construct(AccountInterface $user) {
-    $this->user = $user;
   }
 
   /**
@@ -92,6 +87,16 @@ class ContentEntityNormalizer extends NormalizerBase {
       'id' => $normalized['id'],
       'object' => $object,
     ];
+
+    $service_event = $this->eventDispatcher->dispatch(new ContentEntityExtrasEvent(
+      $object,
+      $normalized,
+      $context,
+    ));
+    if ($services = $service_event->getServices()) {
+      $normalized['service'] = $services;
+    }
+
     return $this->normalizeEntityFields($object, $format, $context, $normalized);
   }
 
