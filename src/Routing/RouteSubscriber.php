@@ -57,7 +57,8 @@ class RouteSubscriber extends RouteSubscriberBase {
           '_controller' => 'iiif_presentation_api.v3.canvas_controller:build',
           '_title_callback' => 'iiif_presentation_api.v3.canvas_controller:titleCallback',
           'parameter_name' => $id,
-        ]);
+        ])
+        ->setRequirement('_custom_access', 'iiif_presentation_api.v3.canvas_controller:access');
       $canvas_v3->setOption('parameters', $canvas_v3->getOption('parameters') + [
         'canvas_type' => [
           'type' => 'string'
@@ -70,14 +71,10 @@ class RouteSubscriber extends RouteSubscriberBase {
 
       // Redirect default/unversioned to the given version.
       $manifest_default = (clone $manifest_v3)
-        ->setPath("{$base_route->getPath()}/iiif-p/manifest")
-        ->setDefault('_controller', 'iiif_presentation_api.default_controller:defaultRedirect')
-        ->setDefault('destination', "entity.{$id}.iiif_p.manifest.v3");
+        ->setPath("{$base_route->getPath()}/iiif-p/manifest");
       $collection->add("entity.{$id}.iiif_p.manifest", $manifest_default);
       $canvas_default = (clone $canvas_v3)
-        ->setPath("{$base_route->getPath()}/iiif-p/canvas/{canvas_type}/{canvas_id}")
-        ->setDefault('_controller', 'iiif_presentation_api.default_controller:defaultRedirect')
-        ->setDefault('destination', "entity.{$id}.iiif_p.canvas.v3");
+        ->setPath("{$base_route->getPath()}/iiif-p/canvas/{canvas_type}/{canvas_id}");
       $collection->add("entity.{$id}.iiif_p.canvas", $canvas_default);
 
     }

@@ -19,9 +19,9 @@ function iiif_presentation_api_entity_type_build(array &$entity_types) {
     $entity_type->setLinkTemplate('iiif_p.manifest.v3', "{$base}/iiif-p/v3/manifest");
     $entity_type->setLinkTemplate('iiif_p.canvas.v3', "{$base}/iiif-p/v3/canvas/{canvas_type}/{canvas_id}");
 
-    // Avoid unnecessary redirects by typing directly to the desired version.
-    $entity_type->setLinkTemplate('iiif_p.manifest', $entity_type->getLinkTemplate('iiif_p.manifest.v3'));
-    $entity_type->setLinkTemplate('iiif_p.canvas', $entity_type->getLinkTemplate('iiif_p.canvas.v3'));
+    // Default endpoints.
+    $entity_type->setLinkTemplate('iiif_p.manifest', "{$base}/iiif-p/manifest");
+    $entity_type->setLinkTemplate('iiif_p.canvas', "{$base}/iiif-p/canvas/{canvas_type}/{canvas_id}");
   }
   unset($entity_type);
 }

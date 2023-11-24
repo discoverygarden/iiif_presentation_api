@@ -29,8 +29,6 @@ services:
       - 'V3'
       - '@container.namespaces'
       - '@module_handler'
-  iiif_presentation_api.default_controller:
-    class: Drupal\iiif_presentation_api\Controller\DefaultController
   iiif_presentation_api.route_subscriber:
     class: Drupal\iiif_presentation_api\Routing\RouteSubscriber
     arguments:

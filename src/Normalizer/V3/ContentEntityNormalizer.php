@@ -55,13 +55,13 @@ class ContentEntityNormalizer extends NormalizerBase {
     }
 
     if ($context['base-depth']) {
-      $item_url = $object->toUrl('iiif_p.manifest.v3');
+      $item_url = $object->toUrl('iiif_p.manifest');
     }
     else {
       /** @var \Drupal\Core\Entity\EntityInterface $parent */
       $parent = $context['parent']['object'];
       $item_url = Url::fromRoute(
-        "entity.{$parent->getEntityTypeId()}.iiif_p.canvas.v3",
+        "entity.{$parent->getEntityTypeId()}.iiif_p.canvas",
         [
           $parent->getEntityTypeId() => $parent->id(),
           'canvas_type' => $object->getEntityTypeId(),
