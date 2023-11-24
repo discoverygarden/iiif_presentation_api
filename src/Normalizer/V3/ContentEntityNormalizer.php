@@ -88,13 +88,14 @@ class ContentEntityNormalizer extends NormalizerBase {
       'object' => $object,
     ];
 
+    /** @var \Drupal\iiif_presentation_api\Event\V3\ContentEntityExtrasEvent $service_event */
     $service_event = $this->eventDispatcher->dispatch(new ContentEntityExtrasEvent(
       $object,
       $normalized,
       $context,
     ));
-    if ($services = $service_event->getServices()) {
-      $normalized['service'] = $services;
+    if ($extras = $service_event->getExtras()) {
+      $normalized = NestedArray::mergeDeep($normalized, $extras);
     }
 
     return $this->normalizeEntityFields($object, $format, $context, $normalized);

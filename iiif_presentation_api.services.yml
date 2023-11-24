@@ -10,7 +10,7 @@ services:
       - { name: normalizer, priority: 10 }
     arguments:
       - '@current_user'
-      - '@event_dispatch'
+      - '@event_dispatcher'
   serializer.normalizer.iiif_presentation_api.iiif_p_v3.field_item_list:
     class: 'Drupal\iiif_presentation_api\Normalizer\V3\FieldItemListNormalizer'
     tags:
