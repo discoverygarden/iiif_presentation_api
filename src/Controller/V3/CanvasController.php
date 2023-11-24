@@ -23,7 +23,7 @@ class CanvasController extends ControllerBase {
    * @param string $canvas_id
    *   The ID of the canvas entity.
    * @param \Drupal\Core\Routing\RouteMatchInterface $route_match
-   *    The route match object.
+   *   The route match object.
    */
   public function build(string $parameter_name, string $canvas_type, string $canvas_id, RouteMatchInterface $route_match) {
     throw new \LogicException('Not implemented.');
@@ -68,6 +68,7 @@ class CanvasController extends ControllerBase {
    *   The account of which to check access.
    *
    * @return \Drupal\Core\Access\AccessResultInterface
+   *   The access result.
    */
   public function access(string $parameter_name, string $canvas_type, string $canvas_id, RouteMatchInterface $route_match, AccountInterface $account) : AccessResultInterface {
     /** @var \Drupal\Core\Entity\EntityInterface $_entity */

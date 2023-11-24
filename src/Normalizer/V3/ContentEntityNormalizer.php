@@ -39,12 +39,9 @@ class ContentEntityNormalizer extends NormalizerBase {
 
   /**
    * {@inheritDoc}
-   *
-   * @param \Drupal\Core\Entity\EntityInterface $object
-   *   The object being serialized.
    */
   public function normalize($object, $format = NULL, array $context = []) {
-
+    /** @var \Drupal\Core\Entity\EntityInterface $object */
     $normalized = [];
     if (!isset($context['base-depth'])) {
       $context['base-depth'] = TRUE;
@@ -75,7 +72,6 @@ class ContentEntityNormalizer extends NormalizerBase {
     $this->addCacheableDependency($context, $generated_item_url);
 
     $normalized += [
-      //'id' => $this->getEntityUri($object, $context),
       'id' => $generated_item_url->getGeneratedUrl(),
       'type' => $context['base-depth'] ? 'Manifest' : 'Canvas',
       'label' => [

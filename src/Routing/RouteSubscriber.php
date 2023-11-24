@@ -39,7 +39,7 @@ class RouteSubscriber extends RouteSubscriberBase {
         ->setRequirement('_entity_access', "{$id}.view")
         ->setOption('parameters', ($base_route->getOption('parameters') ?? []) + [
           $id => [
-            'type' => "entity:{$id}"
+            'type' => "entity:{$id}",
           ],
         ]);
 
@@ -61,7 +61,7 @@ class RouteSubscriber extends RouteSubscriberBase {
         ->setRequirement('_custom_access', 'iiif_presentation_api.v3.canvas_controller:access');
       $canvas_v3->setOption('parameters', $canvas_v3->getOption('parameters') + [
         'canvas_type' => [
-          'type' => 'string'
+          'type' => 'string',
         ],
         'canvas_id' => [
           'type' => 'string',

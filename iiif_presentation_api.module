@@ -15,7 +15,6 @@ function iiif_presentation_api_entity_type_build(array &$entity_types) {
     $base = $entity_type->getLinkTemplate('canonical') ?:
       "/entity/{$entity_type->id()}/{{$entity_type->id()}}";
 
-
     $entity_type->setLinkTemplate('iiif_p.manifest.v3', "{$base}/iiif-p/v3/manifest");
     $entity_type->setLinkTemplate('iiif_p.canvas.v3', "{$base}/iiif-p/v3/canvas/{canvas_type}/{canvas_id}");
 
