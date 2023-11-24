@@ -22,6 +22,10 @@ trait EntityUriTrait {
    *
    * @return string
    *   The entity URI.
+   *
+   * @throws \LogicException
+   *   If the given entity `::isNew()`; or we otherwise do not know how to
+   *   generate a URL for it.
    */
   protected function getEntityUri(EntityInterface $entity, array $context = []): string {
     // Some entity types don't provide a canonical link template.
@@ -34,7 +38,7 @@ trait EntityUriTrait {
       $url = $entity->toUrl('canonical');
     }
     elseif ($this->getRouteProvider()->getRoutesByNames([$route_name])) {
-      $url = Url::fromRoute('rest.entity.' . $entity->getEntityTypeId() . '.GET', [$entity->getEntityTypeId() => $entity->id()]);
+      $url = Url::fromRoute($route_name, [$entity->getEntityTypeId() => $entity->id()]);
     }
     else {
       throw new \LogicException("Unable to generate URL to {$entity->getEntityTypeId()} entity.");

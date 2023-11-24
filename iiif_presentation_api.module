@@ -1,0 +1,27 @@
+<?php
+
+/**
+ * @file
+ * General hook implementations.
+ */
+
+/**
+ * Implements hook_entity_type_build().
+ */
+function iiif_presentation_api_entity_type_build(array &$entity_types) {
+  /** @var \Drupal\Core\Entity\EntityTypeInterface $entity_type */
+  foreach ($entity_types as $entity_type) {
+    // Canonical; or, REST-provided endpoint (just for file entities?).
+    $base = $entity_type->getLinkTemplate('canonical') ?:
+      "/entity/{$entity_type->id()}/{{$entity_type->id()}}";
+
+
+    $entity_type->setLinkTemplate('iiif_p.manifest.v3', "{$base}/iiif-p/v3/manifest");
+    $entity_type->setLinkTemplate('iiif_p.canvas.v3', "{$base}/iiif-p/v3/canvas/{canvas_type}/{canvas_id}");
+
+    // Avoid unnecessary redirects by typing directly to the desired version.
+    $entity_type->setLinkTemplate('iiif_p.manifest', $entity_type->getLinkTemplate('iiif_p.manifest.v3'));
+    $entity_type->setLinkTemplate('iiif_p.canvas', $entity_type->getLinkTemplate('iiif_p.canvas.v3'));
+  }
+  unset($entity_type);
+}

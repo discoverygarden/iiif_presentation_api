@@ -5,6 +5,7 @@ namespace Drupal\iiif_presentation_api\Normalizer\V3;
 use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\Url;
 use Drupal\iiif_presentation_api\Normalizer\EntityUriTrait;
 
 /**
@@ -38,6 +39,9 @@ class ContentEntityNormalizer extends NormalizerBase {
 
   /**
    * {@inheritDoc}
+   *
+   * @param \Drupal\Core\Entity\EntityInterface $object
+   *   The object being serialized.
    */
   public function normalize($object, $format = NULL, array $context = []) {
 
@@ -49,8 +53,30 @@ class ContentEntityNormalizer extends NormalizerBase {
     else {
       $context['base-depth'] = FALSE;
     }
+
+    if ($context['base-depth']) {
+      $item_url = $object->toUrl('iiif_p.manifest.v3');
+    }
+    else {
+      /** @var \Drupal\Core\Entity\EntityInterface $parent */
+      $parent = $context['parent']['object'];
+      $item_url = Url::fromRoute(
+        "entity.{$parent->getEntityTypeId()}.iiif_p.canvas.v3",
+        [
+          $parent->getEntityTypeId() => $parent->id(),
+          'canvas_type' => $object->getEntityTypeId(),
+          'canvas_id' => $object->id(),
+        ]
+      );
+    }
+
+    $generated_item_url = $item_url->setAbsolute()
+      ->toString(TRUE);
+    $this->addCacheableDependency($context, $generated_item_url);
+
     $normalized += [
-      'id' => $this->getEntityUri($object, $context),
+      //'id' => $this->getEntityUri($object, $context),
+      'id' => $generated_item_url->getGeneratedUrl(),
       'type' => $context['base-depth'] ? 'Manifest' : 'Canvas',
       'label' => [
         'none' => [$object->label()],
@@ -68,6 +94,7 @@ class ContentEntityNormalizer extends NormalizerBase {
     $context['parent'] = [
       'type' => $normalized['type'],
       'id' => $normalized['id'],
+      'object' => $object,
     ];
     return $this->normalizeEntityFields($object, $format, $context, $normalized);
   }
