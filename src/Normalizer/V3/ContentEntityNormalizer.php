@@ -56,7 +56,9 @@ class ContentEntityNormalizer extends NormalizerBase {
 
       // XXX: We want to refer to nodes as the "canvas entities" to facilitate
       // their targeting from the IIIF-CS side of things.
-      $canvas_entity = $object instanceof NodeInterface ?: $parent;
+      $canvas_entity = ($object instanceof NodeInterface) ?
+        $object :
+        $parent;
 
       $item_url = Url::fromRoute(
         "entity.{$parent->getEntityTypeId()}.iiif_p.canvas",
