@@ -8,6 +8,7 @@ use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Url;
 use Drupal\iiif_presentation_api\Event\V3\ContentEntityExtrasEvent;
 use Drupal\iiif_presentation_api\Normalizer\EntityUriTrait;
+use Drupal\node\NodeInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
 
 /**
@@ -52,12 +53,17 @@ class ContentEntityNormalizer extends NormalizerBase {
     else {
       /** @var \Drupal\Core\Entity\EntityInterface $parent */
       $parent = $context['parent']['object'];
+
+      // XXX: We want to refer to nodes as the "canvas entities" to facilitate
+      // their targeting from the IIIF-CS side of things.
+      $canvas_entity = $object instanceof NodeInterface ?: $parent;
+
       $item_url = Url::fromRoute(
         "entity.{$parent->getEntityTypeId()}.iiif_p.canvas",
         [
           $parent->getEntityTypeId() => $parent->id(),
-          'canvas_type' => $object->getEntityTypeId(),
-          'canvas_id' => $object->id(),
+          'canvas_type' => $canvas_entity->getEntityTypeId(),
+          'canvas_id' => $canvas_entity->id(),
         ]
       );
     }
