@@ -8,7 +8,9 @@ services:
     class: 'Drupal\iiif_presentation_api\Normalizer\V3\ContentEntityNormalizer'
     tags:
       - { name: normalizer, priority: 10 }
-    arguments: ['@current_user']
+    arguments:
+      - '@current_user'
+      - '@event_dispatcher'
   serializer.normalizer.iiif_presentation_api.iiif_p_v3.field_item_list:
     class: 'Drupal\iiif_presentation_api\Normalizer\V3\FieldItemListNormalizer'
     tags:
@@ -29,3 +31,20 @@ services:
       - 'V3'
       - '@container.namespaces'
       - '@module_handler'
+  iiif_presentation_api.route_subscriber:
+    class: Drupal\iiif_presentation_api\Routing\RouteSubscriber
+    arguments:
+      - '@entity_type.manager'
+    tags:
+      - { name: event_subscriber }
+
+  iiif_presentation_api.v3.manifest_controller:
+    class: Drupal\iiif_presentation_api\Controller\V3\ManifestController
+    factory: [null, create]
+    arguments:
+      - '@service_container'
+  iiif_presentation_api.v3.canvas_controller:
+    class: Drupal\iiif_presentation_api\Controller\V3\CanvasController
+    factory: [null, create]
+    arguments:
+      - '@service_container'

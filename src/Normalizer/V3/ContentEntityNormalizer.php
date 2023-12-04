@@ -5,7 +5,11 @@ namespace Drupal\iiif_presentation_api\Normalizer\V3;
 use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Session\AccountInterface;
+use Drupal\Core\Url;
+use Drupal\iiif_presentation_api\Event\V3\ContentEntityExtrasEvent;
 use Drupal\iiif_presentation_api\Normalizer\EntityUriTrait;
+use Drupal\node\NodeInterface;
+use Psr\EventDispatcher\EventDispatcherInterface;
 
 /**
  * Normalizer for content entities.
@@ -20,27 +24,20 @@ class ContentEntityNormalizer extends NormalizerBase {
   protected $supportedInterfaceOrClass = ContentEntityInterface::class;
 
   /**
-   * The current user.
-   *
-   * @var \Drupal\Core\Session\AccountInterface
+   * Constructor.
    */
-  protected AccountInterface $user;
+  public function __construct(
+    protected AccountInterface $user,
+    protected EventDispatcherInterface $eventDispatcher,
+  ) {
 
-  /**
-   * Constructor for the ContentEntityNormalizer.
-   *
-   * @param \Drupal\Core\Session\AccountInterface $user
-   *   The current user.
-   */
-  public function __construct(AccountInterface $user) {
-    $this->user = $user;
   }
 
   /**
    * {@inheritDoc}
    */
   public function normalize($object, $format = NULL, array $context = []) {
-
+    /** @var \Drupal\Core\Entity\EntityInterface $object */
     $normalized = [];
     if (!isset($context['base-depth'])) {
       $context['base-depth'] = TRUE;
@@ -49,8 +46,36 @@ class ContentEntityNormalizer extends NormalizerBase {
     else {
       $context['base-depth'] = FALSE;
     }
+
+    if ($context['base-depth']) {
+      $item_url = $object->toUrl('iiif_p.manifest');
+    }
+    else {
+      /** @var \Drupal\Core\Entity\EntityInterface $parent */
+      $parent = $context['parent']['object'];
+
+      // XXX: We want to refer to nodes as the "canvas entities" to facilitate
+      // their targeting from the IIIF-CS side of things.
+      $canvas_entity = ($object instanceof NodeInterface) ?
+        $object :
+        $parent;
+
+      $item_url = Url::fromRoute(
+        "entity.{$parent->getEntityTypeId()}.iiif_p.canvas",
+        [
+          $parent->getEntityTypeId() => $parent->id(),
+          'canvas_type' => $canvas_entity->getEntityTypeId(),
+          'canvas_id' => $canvas_entity->id(),
+        ]
+      );
+    }
+
+    $generated_item_url = $item_url->setAbsolute()
+      ->toString(TRUE);
+    $this->addCacheableDependency($context, $generated_item_url);
+
     $normalized += [
-      'id' => $this->getEntityUri($object, $context),
+      'id' => $generated_item_url->getGeneratedUrl(),
       'type' => $context['base-depth'] ? 'Manifest' : 'Canvas',
       'label' => [
         'none' => [$object->label()],
@@ -68,7 +93,19 @@ class ContentEntityNormalizer extends NormalizerBase {
     $context['parent'] = [
       'type' => $normalized['type'],
       'id' => $normalized['id'],
+      'object' => $object,
     ];
+
+    /** @var \Drupal\iiif_presentation_api\Event\V3\ContentEntityExtrasEvent $service_event */
+    $service_event = $this->eventDispatcher->dispatch(new ContentEntityExtrasEvent(
+      $object,
+      $normalized,
+      $context,
+    ));
+    if ($extras = $service_event->getExtras()) {
+      $normalized = NestedArray::mergeDeep($normalized, $extras);
+    }
+
     return $this->normalizeEntityFields($object, $format, $context, $normalized);
   }
 

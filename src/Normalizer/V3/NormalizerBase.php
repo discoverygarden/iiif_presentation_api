@@ -2,12 +2,15 @@
 
 namespace Drupal\iiif_presentation_api\Normalizer\V3;
 
+use Drupal\Core\DependencyInjection\DependencySerializationTrait;
 use Drupal\serialization\Normalizer\NormalizerBase as SerializationNormalizerBase;
 
 /**
  * Base normalizer for IIIF Presentation API v3.
  */
 abstract class NormalizerBase extends SerializationNormalizerBase {
+
+  use DependencySerializationTrait;
 
   /**
    * {@inheritDoc}
