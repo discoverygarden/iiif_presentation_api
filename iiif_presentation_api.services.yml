@@ -1,3 +1,4 @@
+---
 services:
   serializer.encoder.iiif_presentation_api.iiif_p_v3.encoder:
     class: 'Drupal\iiif_presentation_api\Encoder\V3\IiifP'
@@ -16,3 +17,15 @@ services:
     class: 'Drupal\iiif_presentation_api\Normalizer\V3\FieldItemNormalizer'
     tags:
       - { name: normalizer, priority: 10 }
+  iiif_presentation_api.iiif_p_v3.base_body_subscriber:
+    class: 'Drupal\iiif_presentation_api\EventSubscriber\V3\BaseImageBodyEventSubscriber'
+    arguments:
+      - '@plugin.manager.iiif_presentation_api.iiif_p_v3.id_process'
+    tags:
+      - { name: 'event_subscriber' }
+  plugin.manager.iiif_presentation_api.iiif_p_v3.id_process:
+    class: 'Drupal\iiif_presentation_api\IdProcessPluginManager'
+    arguments:
+      - 'V3'
+      - '@container.namespaces'
+      - '@module_handler'
