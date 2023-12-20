@@ -86,7 +86,7 @@ class BaseImageBodyEventSubscriber implements EventSubscriberInterface {
       'thumbnail' => [
         [
           'id' => "$base_id/full/255,/0/default.jpg",
-          'type' => "Image"
+          'type' => "Image",
         ],
       ],
     ];
