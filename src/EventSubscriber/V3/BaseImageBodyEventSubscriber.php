@@ -74,7 +74,7 @@ class BaseImageBodyEventSubscriber implements EventSubscriberInterface {
     ]);
 
     return [
-      'id' => "$base_id/full/0/default.jpg",
+      'id' => "$base_id/full/full/0/default.jpg",
       'type' => 'Image',
       'format' => 'image/jpeg',
       'service' => [
