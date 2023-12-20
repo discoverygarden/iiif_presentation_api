@@ -84,9 +84,11 @@ class BaseImageBodyEventSubscriber implements EventSubscriberInterface {
         ] + $extra,
       ],
       'thumbnail' => [
-        'id' => "$base_id/full/255,/0/default.jpg",
-        'type' => "dctypes:Image"
-      ]
+        [
+          'id' => "$base_id/full/255,/0/default.jpg",
+          'type' => "Image"
+        ],
+      ],
     ];
   }
 
