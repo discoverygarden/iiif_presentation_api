@@ -72,6 +72,7 @@ class BaseImageBodyEventSubscriber implements EventSubscriberInterface {
     $base_id = strtr($slug, [
       '{identifier}' => rawurlencode($id_plugin->getIdentifier($file)),
     ]);
+
     return [
       'id' => "$base_id/full/full/0/default.jpg",
       'type' => 'Image',
