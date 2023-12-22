@@ -133,7 +133,7 @@ class ContentEntityNormalizer extends NormalizerBase {
 
       // Load a single media entity by properties.
       $media_entities = $media_storage->loadByProperties([
-        'field_media_use' => $term_id, // Need to make it dynamic after verification.
+        'field_media_use' => $term_id,
         'field_media_of' => $object->id(),
       ]);
 
