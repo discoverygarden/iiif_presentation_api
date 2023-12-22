@@ -6,7 +6,9 @@ use Drupal\Component\Utility\NestedArray;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Url;
+use Drupal\file\FileInterface;
 use Drupal\iiif_presentation_api\Event\V3\ContentEntityExtrasEvent;
+use Drupal\iiif_presentation_api\Event\V3\ImageBodyEvent;
 use Drupal\iiif_presentation_api\Normalizer\EntityUriTrait;
 use Drupal\node\NodeInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
@@ -106,7 +108,57 @@ class ContentEntityNormalizer extends NormalizerBase {
       $normalized = NestedArray::mergeDeep($normalized, $extras);
     }
 
+    // It triggers for node and media. Adds thumbnail multiple time.
+    // Restricting it for node only.
+    if ($object->getEntityTypeId() == 'node') {
+
+      // Load the entity type manager.
+      $entity_type_manager = \Drupal::entityTypeManager();
+
+      // Get the storage handler for the media entity.
+      $media_storage = $entity_type_manager->getStorage('media');
+
+      // Load a single media entity by properties.
+      $media_entities = $media_storage->loadByProperties([
+        'field_media_use' => 349, // Need to make it dynamic after verification.
+        'field_media_of' => $object->id(),
+      ]);
+
+      // Check if a media entity was found.
+      if ($media_entities) {
+        // Process the single media entity as needed.
+        $media_entity = reset($media_entities);
+
+        // Get the file ID from the file field.
+        $file_id = $media_entity->get('field_media_image')->target_id;
+        $file = $entity_type_manager->getStorage('file')->load($file_id);
+      }
+
+      $normalized['thumbnail'] = $this->generateBody($file);
+    }
     return $this->normalizeEntityFields($object, $format, $context, $normalized);
+  }
+
+  /**
+   * Generate the annotation body.
+   *
+   * @param \Drupal\file\FileInterface $file
+   *   The file for which to generate the body.
+   *
+   * @return array
+   *   An associative array representing the body.
+   */
+  protected function generateBody(FileInterface $file) : array {
+    /** @var \Drupal\iiif_presentation_api\Event\V3\ImageBodyEvent $event */
+    $event_dispatcher = \Drupal::service('event_dispatcher');
+    $event = $event_dispatcher->dispatch(new ImageBodyEvent($file));
+    $bodies = $event->getBodies();
+    if (!$bodies) {
+      return [];
+    }
+    $body = reset($bodies);
+    $body['service'] = array_merge(...array_filter(array_column($bodies, 'service')));
+    return $body;
   }
 
   /**
