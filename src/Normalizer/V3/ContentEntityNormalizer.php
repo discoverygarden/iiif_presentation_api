@@ -150,8 +150,7 @@ class ContentEntityNormalizer extends NormalizerBase {
    */
   protected function generateBody(FileInterface $file) : array {
     /** @var \Drupal\iiif_presentation_api\Event\V3\ImageBodyEvent $event */
-    $event_dispatcher = \Drupal::service('event_dispatcher');
-    $event = $event_dispatcher->dispatch(new ImageBodyEvent($file));
+    $event = $this->eventDispatcher->dispatch(new ImageBodyEvent($file));
     $bodies = $event->getBodies();
     if (!$bodies) {
       return [];
