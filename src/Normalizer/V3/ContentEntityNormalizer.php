@@ -115,12 +115,25 @@ class ContentEntityNormalizer extends NormalizerBase {
       // Load the entity type manager.
       $entity_type_manager = \Drupal::entityTypeManager();
 
+      // Get term id for Thumbnail Image.
+      $term_storage = $entity_type_manager->getStorage('taxonomy_term');
+      $term = $term_storage->loadByProperties([
+        'name' => 'Thumbnail Image',
+        'vid' => 'islandora_media_use',
+      ]);
+
+      // Check if the term is found.
+      if (!empty($term)) {
+        // Get the term ID.
+        $term_id = reset($term)->id();
+      }
+
       // Get the storage handler for the media entity.
       $media_storage = $entity_type_manager->getStorage('media');
 
       // Load a single media entity by properties.
       $media_entities = $media_storage->loadByProperties([
-        'field_media_use' => 349, // Need to make it dynamic after verification.
+        'field_media_use' => $term_id, // Need to make it dynamic after verification.
         'field_media_of' => $object->id(),
       ]);
 
@@ -132,9 +145,9 @@ class ContentEntityNormalizer extends NormalizerBase {
         // Get the file ID from the file field.
         $file_id = $media_entity->get('field_media_image')->target_id;
         $file = $entity_type_manager->getStorage('file')->load($file_id);
-      }
 
-      $normalized['thumbnail'] = $this->generateBody($file);
+        $normalized['thumbnail'] = $this->generateBody($file);
+      }
     }
     return $this->normalizeEntityFields($object, $format, $context, $normalized);
   }
