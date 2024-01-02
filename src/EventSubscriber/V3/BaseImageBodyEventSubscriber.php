@@ -57,13 +57,15 @@ class BaseImageBodyEventSubscriber implements EventSubscriberInterface {
    *   The file for which to generate a bod.
    * @param array $extra
    *   An associative array of extra values to be set in the body.
+   * @param string $size
+   *   The requested size.
    *
    * @return array
    *   The body.
    *
    * @throws \Drupal\Component\Plugin\Exception\PluginException
    */
-  protected function getBody(?string $slug, FileInterface $file, array $extra = []) : array {
+  protected function getBody(?string $slug, FileInterface $file, array $extra = [], string $size = 'full') : array {
     if (!$slug) {
       return [];
     }
@@ -73,7 +75,7 @@ class BaseImageBodyEventSubscriber implements EventSubscriberInterface {
       '{identifier}' => rawurlencode($id_plugin->getIdentifier($file)),
     ]);
     return [
-      'id' => "$base_id/full/full/0/default.jpg",
+      'id' => "{$base_id}/full/{$size}/0/default.jpg",
       'type' => 'Image',
       'format' => 'image/jpeg',
       'service' => [
@@ -96,6 +98,9 @@ class BaseImageBodyEventSubscriber implements EventSubscriberInterface {
         'type' => 'ImageService1',
         'profile' => 'level2',
       ],
+      // @todo Validate that the size spec is valid for IIIF-I V1, maybe map to
+      // something similar if unsupported?
+      $event->getSize(),
     ));
   }
 
@@ -110,6 +115,9 @@ class BaseImageBodyEventSubscriber implements EventSubscriberInterface {
         'type' => 'ImageService2',
         'profile' => 'level2',
       ],
+      // @todo Validate that the size spec is valid for IIIF-I V2, maybe map to
+      // something similar if unsupported?
+      $event->getSize(),
     ));
   }
 
@@ -124,6 +132,9 @@ class BaseImageBodyEventSubscriber implements EventSubscriberInterface {
         'type' => 'ImageService3',
         'profile' => 'level2',
       ],
+      // @todo Validate that the size spec is valid for IIIF-I V3, maybe map to
+      // something similar if unsupported?
+      $event->getSize(),
     ));
   }
 
