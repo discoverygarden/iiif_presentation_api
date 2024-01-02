@@ -22,7 +22,7 @@ class ImageBodyEvent extends Event {
    */
   public function __construct(
     protected FileInterface $image,
-    protected string $size,
+    protected string $size = 'full',
   ) {
   }
 
