@@ -22,6 +22,7 @@ class ImageBodyEvent extends Event {
    */
   public function __construct(
     protected FileInterface $image,
+    protected string $size = 'full',
   ) {
   }
 
@@ -56,6 +57,16 @@ class ImageBodyEvent extends Event {
    */
   public function getBodies() : array {
     return $this->bodies;
+  }
+
+  /**
+   * Get the requested size hint.
+   *
+   * @return string
+   *   The size hint requested for the event.
+   */
+  public function getSize() : string {
+    return $this->size;
   }
 
 }
