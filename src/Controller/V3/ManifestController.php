@@ -2,8 +2,11 @@
 
 namespace Drupal\iiif_presentation_api\Controller\V3;
 
+use Drupal\Core\Cache\CacheableJsonResponse;
+use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\serialization\Normalizer\CacheableNormalizerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -41,8 +44,13 @@ class ManifestController extends ControllerBase {
    */
   public function build(string $parameter_name, RouteMatchInterface $route_match) {
     $_entity = $route_match->getParameter($parameter_name);
-    return (new JsonResponse(
-      $this->serializer->serialize($_entity, 'iiif-p-v3'),
+    $cache_meta = new CacheableMetadata();
+    $context = [
+      CacheableNormalizerInterface::SERIALIZATION_CONTEXT_CACHEABILITY => $cache_meta,
+    ];
+    $serialized = $this->serializer->serialize($_entity, 'iiif-p-v3', $context);
+    return (new CacheableJsonResponse(
+      $serialized,
       200,
       [
         'Access-Control-Allow-Credentials' => 'true',
@@ -50,7 +58,7 @@ class ManifestController extends ControllerBase {
         'Access-Control-Allow-Methods' => 'GET',
       ],
       TRUE
-    ));
+    ))->addCacheableDependency($cache_meta);
   }
 
   /**
