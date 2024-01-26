@@ -44,7 +44,11 @@ class ManifestController extends ControllerBase {
     return (new JsonResponse(
       $this->serializer->serialize($_entity, 'iiif-p-v3'),
       200,
-      [],
+      [
+        'Access-Control-Allow-Credentials' => 'true',
+        'Access-Control-Allow-Origin' => '*',
+        'Access-Control-Allow-Methods' => 'GET',
+      ],
       TRUE
     ));
   }
