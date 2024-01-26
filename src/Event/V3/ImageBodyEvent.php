@@ -23,6 +23,7 @@ class ImageBodyEvent extends Event {
   public function __construct(
     protected FileInterface $image,
     protected string $size = 'full',
+    protected array $context = [],
   ) {
   }
 
@@ -67,6 +68,16 @@ class ImageBodyEvent extends Event {
    */
   public function getSize() : string {
     return $this->size;
+  }
+
+  /**
+   * Get the (serializer) context for the event.
+   *
+   * @return array
+   *   The related context.
+   */
+  public function getContext() : array {
+    return $this->context;
   }
 
 }

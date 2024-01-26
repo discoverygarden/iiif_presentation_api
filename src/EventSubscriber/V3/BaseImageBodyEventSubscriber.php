@@ -66,7 +66,7 @@ class BaseImageBodyEventSubscriber implements EventSubscriberInterface {
    *
    * @throws \Drupal\Component\Plugin\Exception\PluginException
    */
-  protected function getBody(?string $slug, FileInterface $file, array $extra = [], string $size = 'full') : array {
+  protected function getBody(?string $slug, FileInterface $file, array $extra = [], string $size = 'full', array $context = []) : array {
     if (!$slug) {
       return [];
     }
@@ -102,6 +102,7 @@ class BaseImageBodyEventSubscriber implements EventSubscriberInterface {
       // @todo Validate that the size spec is valid for IIIF-I V1, maybe map to
       // something similar if unsupported?
       $event->getSize(),
+      $event->getContext(),
     ));
   }
 
@@ -119,6 +120,7 @@ class BaseImageBodyEventSubscriber implements EventSubscriberInterface {
       // @todo Validate that the size spec is valid for IIIF-I V2, maybe map to
       // something similar if unsupported?
       $event->getSize(),
+      $event->getContext(),
     ));
   }
 
@@ -136,6 +138,7 @@ class BaseImageBodyEventSubscriber implements EventSubscriberInterface {
       // @todo Validate that the size spec is valid for IIIF-I V3, maybe map to
       // something similar if unsupported?
       $event->getSize(),
+      $event->getContext(),
     ));
   }
 
