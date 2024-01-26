@@ -3,12 +3,16 @@
 namespace Drupal\iiif_presentation_api\Event\V3;
 
 use Drupal\Component\EventDispatcher\Event;
+use Drupal\Core\Cache\RefinableCacheableDependencyInterface;
+use Drupal\Core\Cache\RefinableCacheableDependencyTrait;
 use Drupal\file\FileInterface;
 
 /**
  * Image body generation event.
  */
-class ImageBodyEvent extends Event {
+class ImageBodyEvent extends Event implements RefinableCacheableDependencyInterface {
+
+  use RefinableCacheableDependencyTrait;
 
   /**
    * The bodies added to the event.
@@ -23,7 +27,6 @@ class ImageBodyEvent extends Event {
   public function __construct(
     protected FileInterface $image,
     protected string $size = 'full',
-    protected array $context = [],
   ) {
   }
 
@@ -68,16 +71,6 @@ class ImageBodyEvent extends Event {
    */
   public function getSize() : string {
     return $this->size;
-  }
-
-  /**
-   * Get the (serializer) context for the event.
-   *
-   * @return array
-   *   The related context.
-   */
-  public function getContext() : array {
-    return $this->context;
   }
 
 }

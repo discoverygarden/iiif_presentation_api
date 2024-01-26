@@ -5,6 +5,8 @@ namespace Drupal\iiif_presentation_api\Controller\V3;
 use Drupal\Core\Cache\CacheableJsonResponse;
 use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Controller\ControllerBase;
+use Drupal\Core\Render\RenderContext;
+use Drupal\Core\Render\RendererInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
 use Drupal\serialization\Normalizer\CacheableNormalizerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -23,12 +25,20 @@ class ManifestController extends ControllerBase {
   protected SerializerInterface $serializer;
 
   /**
+   * Renderer service.
+   *
+   * @var \Drupal\Core\Render\RendererInterface
+   */
+  protected RendererInterface $renderer;
+
+  /**
    * {@inheritDoc}
    */
   public static function create(ContainerInterface $container) {
     $instance = parent::create($container);
 
     $instance->serializer = $container->get('serializer');
+    $instance->renderer = $container->get('renderer');
 
     return $instance;
   }
@@ -42,22 +52,35 @@ class ManifestController extends ControllerBase {
    *   The route match object.
    */
   public function build(string $parameter_name, RouteMatchInterface $route_match) {
-    $_entity = $route_match->getParameter($parameter_name);
-    $cache_meta = new CacheableMetadata();
-    $context = [
-      CacheableNormalizerInterface::SERIALIZATION_CONTEXT_CACHEABILITY => $cache_meta,
-    ];
-    $serialized = $this->serializer->serialize($_entity, 'iiif-p-v3', $context);
-    return (new CacheableJsonResponse(
-      $serialized,
-      200,
-      [
-        'Access-Control-Allow-Credentials' => 'true',
-        'Access-Control-Allow-Origin' => '*',
-        'Access-Control-Allow-Methods' => 'GET',
-      ],
-      TRUE
-    ))->addCacheableDependency($cache_meta);
+    // XXX: Seems like something leaking cache metadata, explicitly wrap things
+    // up in a render context to capture and attach it.
+    $context = new RenderContext();
+    /** @var \Drupal\Core\Cache\CacheableJsonResponse $response */
+    $response = $this->renderer->executeInRenderContext($context, function () use ($parameter_name, $route_match) {
+      $_entity = $route_match->getParameter($parameter_name);
+      $cache_meta = new CacheableMetadata();
+      $context = [
+        CacheableNormalizerInterface::SERIALIZATION_CONTEXT_CACHEABILITY => $cache_meta,
+      ];
+      $serialized = $this->serializer->serialize($_entity, 'iiif-p-v3', $context);
+      return (new CacheableJsonResponse(
+        $serialized,
+        200,
+        [
+          'Access-Control-Allow-Credentials' => 'true',
+          'Access-Control-Allow-Origin' => '*',
+          'Access-Control-Allow-Methods' => 'GET',
+        ],
+        TRUE
+      ))->addCacheableDependency($cache_meta);
+    });
+
+    if (!$context->isEmpty()) {
+      $metadata = $context->pop();
+      $response->addCacheableDependency($metadata);
+    }
+
+    return $response;
   }
 
   /**
