@@ -4,9 +4,7 @@ namespace Drupal\iiif_presentation_api\EventSubscriber\V3;
 
 use Drupal\Component\Plugin\PluginManagerInterface;
 use Drupal\Core\Url;
-use Drupal\file\FileInterface;
 use Drupal\iiif_presentation_api\Event\V3\ImageBodyEvent;
-use Drupal\serialization\Normalizer\CacheableNormalizerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
 /**
