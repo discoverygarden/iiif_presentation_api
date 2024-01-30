@@ -3,6 +3,7 @@
 namespace Drupal\iiif_presentation_api\EventSubscriber\V3;
 
 use Drupal\Component\Plugin\PluginManagerInterface;
+use Drupal\Core\Url;
 use Drupal\file\FileInterface;
 use Drupal\iiif_presentation_api\Event\V3\ImageBodyEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
@@ -75,13 +76,13 @@ class BaseImageBodyEventSubscriber implements EventSubscriberInterface {
       '{identifier}' => rawurlencode($id_plugin->getIdentifier($file)),
     ]);
     return [
-      'id' => "{$base_id}/full/{$size}/0/default.jpg",
+      'id' => Url::fromUri("{$base_id}/full/{$size}/0/default.jpg", ['absolute' => TRUE])->toString(),
       'type' => 'Image',
       'format' => 'image/jpeg',
       'service' => [
         [
           // @todo Add in auth in some manner.
-          'id' => $base_id,
+          'id' => Url::fromUri($base_id, ['absolute' => TRUE])->toString(),
         ] + $extra,
       ],
     ];

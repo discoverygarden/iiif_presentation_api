@@ -36,6 +36,15 @@ There are some environment variables to help integrate with IIIF Image APIs, in 
 
 Presently, we indicate `level2` compliance for each IIIF Image API endpoint.
 
+As a point of convenience, it is possible to specify the `IIIF_IMAGE_V*_SLUG`
+values using `base:`, as used by
+[Drupal's `Url::fromUri()`](https://api.drupal.org/api/drupal/core%21lib%21Drupal%21Core%21Url.php/function/Url%3A%3AfromUri/10).
+For example, if you are using a proxy to make a `/iiif/2` path for a IIIF-I v2
+endpoint, such that your slug would be
+`https://{your hostname}/iiif/2/{identifier}`, then you can instead use
+`base:/iiif/2/{identifier}` to configure the reference more explicitly relative
+to the hostname used to access the site.
+
 ## Troubleshooting/Issues
 
 Having problems or solved one? contact
