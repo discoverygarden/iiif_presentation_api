@@ -7,6 +7,7 @@ use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Session\AccountInterface;
 use Drupal\Core\Url;
 use Drupal\iiif_presentation_api\Event\V3\ContentEntityExtrasEvent;
+use Drupal\iiif_presentation_api\FieldMapperInterface;
 use Drupal\iiif_presentation_api\Normalizer\EntityUriTrait;
 use Drupal\node\NodeInterface;
 use Psr\EventDispatcher\EventDispatcherInterface;
@@ -29,6 +30,7 @@ class ContentEntityNormalizer extends NormalizerBase {
   public function __construct(
     protected AccountInterface $user,
     protected EventDispatcherInterface $eventDispatcher,
+    protected FieldMapperInterface $fieldMapper,
   ) {
 
   }
@@ -127,6 +129,9 @@ class ContentEntityNormalizer extends NormalizerBase {
   protected function normalizeEntityFields(ContentEntityInterface $object, string $format, array $context, array $normalized): array {
     $this->addCacheableDependency($context, $object);
     foreach ($object->getFields() as $field) {
+      if (!$this->fieldMapper->isInMapping($object->getEntityTypeId(), $field->getName())) {
+        continue;
+      }
       $access = $field->access('view', $context['account'], TRUE);
       $this->addCacheableDependency($context, $access);
       if (!$access->isAllowed()) {
