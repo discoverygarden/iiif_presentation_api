@@ -2,6 +2,9 @@
 
 namespace Drupal\iiif_presentation_api;
 
+/**
+ * Generic service interface in which to build out a mapping.
+ */
 interface FieldMapperInterface {
 
   /**
@@ -35,4 +38,5 @@ interface FieldMapperInterface {
    *   TRUE if present; otherwise, FALSE.
    */
   public function isInMapping(string $entity_type_id, string $field_name) : bool;
+
 }
