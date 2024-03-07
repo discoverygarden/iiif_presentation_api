@@ -86,9 +86,7 @@ class ContentEntityNormalizer extends NormalizerBase {
       'account' => $this->user,
     ];
 
-    if (isset($context[static::SERIALIZATION_CONTEXT_CACHEABILITY])) {
-      $context[static::SERIALIZATION_CONTEXT_CACHEABILITY]->addCacheContexts(['user.roles']);
-    }
+    $context[static::SERIALIZATION_CONTEXT_CACHEABILITY]?->addCacheContexts(['user.roles']);
 
     $context['parent'] = [
       'type' => $normalized['type'],
@@ -102,6 +100,7 @@ class ContentEntityNormalizer extends NormalizerBase {
       $normalized,
       $context,
     ));
+    $this->addCacheableDependency($context, $service_event);
     if ($extras = $service_event->getExtras()) {
       $normalized = NestedArray::mergeDeep($normalized, $extras);
     }

@@ -3,12 +3,16 @@
 namespace Drupal\iiif_presentation_api\Event\V3;
 
 use Drupal\Component\EventDispatcher\Event;
+use Drupal\Core\Cache\RefinableCacheableDependencyInterface;
+use Drupal\Core\Cache\RefinableCacheableDependencyTrait;
 use Drupal\Core\Entity\EntityInterface;
 
 /**
  * Content entity service gathering event.
  */
-class ContentEntityExtrasEvent extends Event {
+class ContentEntityExtrasEvent extends Event implements RefinableCacheableDependencyInterface {
+
+  use RefinableCacheableDependencyTrait;
 
   /**
    * Built out set of extra properties to set in the manifest.

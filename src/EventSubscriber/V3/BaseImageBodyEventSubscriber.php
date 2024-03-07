@@ -4,7 +4,6 @@ namespace Drupal\iiif_presentation_api\EventSubscriber\V3;
 
 use Drupal\Component\Plugin\PluginManagerInterface;
 use Drupal\Core\Url;
-use Drupal\file\FileInterface;
 use Drupal\iiif_presentation_api\Event\V3\ImageBodyEvent;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 
@@ -46,6 +45,7 @@ class BaseImageBodyEventSubscriber implements EventSubscriberInterface {
       'format' => $file->getMimeType(),
       'service' => [],
     ]);
+    $event->addCacheableDependency($file);
   }
 
   /**
@@ -54,35 +54,45 @@ class BaseImageBodyEventSubscriber implements EventSubscriberInterface {
    * @param string|null $slug
    *   A URL slug for the endpoint. If provided, should have an `{identifier}`
    *   portion that we will replace with an ID.
-   * @param \Drupal\file\FileInterface $file
-   *   The file for which to generate a bod.
+   * @param \Drupal\iiif_presentation_api\Event\V3\ImageBodyEvent $event
+   *   The event for which we are generating a body.
    * @param array $extra
    *   An associative array of extra values to be set in the body.
-   * @param string $size
-   *   The requested size.
+   * @param string|null $size
+   *   The requested size, or NULL to use the size specified in the event.
    *
    * @return array
    *   The body.
    *
    * @throws \Drupal\Component\Plugin\Exception\PluginException
    */
-  protected function getBody(?string $slug, FileInterface $file, array $extra = [], string $size = 'full') : array {
+  protected function getBody(?string $slug, ImageBodyEvent $event, array $extra = [], ?string $size = NULL) : array {
     if (!$slug) {
       return [];
     }
+
+    $file = $event->getImage();
+    $size ??= $event->getSize();
 
     $id_plugin = $this->idPluginManager->createInstance(getenv('IIIF_IMAGE_ID_PLUGIN') ?: 'identity');
     $base_id = strtr($slug, [
       '{identifier}' => rawurlencode($id_plugin->getIdentifier($file)),
     ]);
+    $generated_body_id = Url::fromUri("{$base_id}/full/{$size}/0/default.jpg", ['absolute' => TRUE])->toString(TRUE);
+    $service_id = Url::fromUri($base_id, ['absolute' => TRUE])->toString(TRUE);
+
+    $event->addCacheableDependency($generated_body_id)
+      ->addCacheableDependency($service_id)
+      ->addCacheableDependency($file);
+
     return [
-      'id' => Url::fromUri("{$base_id}/full/{$size}/0/default.jpg", ['absolute' => TRUE])->toString(),
+      'id' => $generated_body_id->getGeneratedUrl(),
       'type' => 'Image',
       'format' => 'image/jpeg',
       'service' => [
         [
           // @todo Add in auth in some manner.
-          'id' => Url::fromUri($base_id, ['absolute' => TRUE])->toString(),
+          'id' => $service_id->getGeneratedUrl(),
         ] + $extra,
       ],
     ];
@@ -92,16 +102,15 @@ class BaseImageBodyEventSubscriber implements EventSubscriberInterface {
    * Event callback; build body for IIIF Image API v1.
    */
   public function imageV1Body(ImageBodyEvent $event) : void {
+    // @todo Validate that the size spec is valid for IIIF-I V1, maybe map to
+    // something similar if unsupported?
     $event->addBody($this->getBody(
       getenv('IIIF_IMAGE_V1_SLUG'),
-      $event->getImage(),
+      $event,
       [
         'type' => 'ImageService1',
         'profile' => 'level2',
       ],
-      // @todo Validate that the size spec is valid for IIIF-I V1, maybe map to
-      // something similar if unsupported?
-      $event->getSize(),
     ));
   }
 
@@ -109,16 +118,16 @@ class BaseImageBodyEventSubscriber implements EventSubscriberInterface {
    * Event callback; build body for IIIF Image API v2.
    */
   public function imageV2Body(ImageBodyEvent $event) : void {
+    // @todo Validate that the size spec is valid for IIIF-I V2, maybe map to
+    // something similar if unsupported?
     $event->addBody($this->getBody(
       getenv('IIIF_IMAGE_V2_SLUG'),
-      $event->getImage(),
+      $event,
       [
         'type' => 'ImageService2',
         'profile' => 'level2',
       ],
-      // @todo Validate that the size spec is valid for IIIF-I V2, maybe map to
-      // something similar if unsupported?
-      $event->getSize(),
+
     ));
   }
 
@@ -126,16 +135,15 @@ class BaseImageBodyEventSubscriber implements EventSubscriberInterface {
    * Event callback; build body for IIIF Image API v3.
    */
   public function imageV3Body(ImageBodyEvent $event) : void {
+    // @todo Validate that the size spec is valid for IIIF-I V3, maybe map to
+    // something similar if unsupported?
     $event->addBody($this->getBody(
       getenv('IIIF_IMAGE_V3_SLUG'),
-      $event->getImage(),
+      $event,
       [
         'type' => 'ImageService3',
         'profile' => 'level2',
       ],
-      // @todo Validate that the size spec is valid for IIIF-I V3, maybe map to
-      // something similar if unsupported?
-      $event->getSize(),
     ));
   }
 
