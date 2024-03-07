@@ -11,6 +11,7 @@ services:
     arguments:
       - '@current_user'
       - '@event_dispatcher'
+      - '@iiif_presentation_api.v3.field_mapper'
   serializer.normalizer.iiif_presentation_api.iiif_p_v3.field_item_list:
     class: 'Drupal\iiif_presentation_api\Normalizer\V3\FieldItemListNormalizer'
     tags:
@@ -48,3 +49,8 @@ services:
     factory: [null, create]
     arguments:
       - '@service_container'
+
+  iiif_presentation_api.v3.field_mapper:
+    class: Drupal\iiif_presentation_api\FieldMapper
+    tags:
+      - { name: iiif_presentation_api_mapper, base: iiif_presentation_api_map, version: v3 }
