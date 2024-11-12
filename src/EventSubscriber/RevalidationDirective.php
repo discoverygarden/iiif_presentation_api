@@ -9,8 +9,13 @@ use Symfony\Component\HttpKernel\KernelEvents;
 /**
  * Add 'Cache-Control: no-cache' to IIIF-P manifests.
  *
- * So access control actions should take effect sooner, at the expense of more
- * load on the server during general use.
+ * This is done such that access control actions should take effect sooner, at
+ * the expense of more load on the server during general use.
+ *
+ * Note: This is explicitly weighted/prioritized such that it should run _after_
+ * Drupal's `FinishResponseSubscriber` runs to add its base cache headers.
+ *
+ * @see \Drupal\Core\EventSubscriber\FinishResponseSubscriber::getSubscribedEvents()
  */
 class RevalidationDirective implements EventSubscriberInterface {
 
