@@ -8,6 +8,7 @@ use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Render\RenderContext;
 use Drupal\Core\Render\RendererInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\iiif_presentation_api\EventSubscriber\RevalidationDirective;
 use Drupal\serialization\Normalizer\CacheableNormalizerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Serializer\SerializerInterface;
@@ -63,7 +64,7 @@ class ManifestController extends ControllerBase {
         CacheableNormalizerInterface::SERIALIZATION_CONTEXT_CACHEABILITY => $cache_meta,
       ];
       $serialized = $this->serializer->serialize($_entity, 'iiif-p-v3', $context);
-      return (new CacheableJsonResponse(
+      $response = (new CacheableJsonResponse(
         $serialized,
         200,
         [
@@ -73,6 +74,10 @@ class ManifestController extends ControllerBase {
         ],
         TRUE
       ))->addCacheableDependency($cache_meta);
+
+      $response->headers->set(RevalidationDirective::HEADER, TRUE);
+
+      return $response;
     });
 
     if (!$context->isEmpty()) {

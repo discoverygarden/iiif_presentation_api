@@ -54,3 +54,8 @@ services:
     class: Drupal\iiif_presentation_api\FieldMapper
     tags:
       - { name: iiif_presentation_api_mapper, base: iiif_presentation_api_map, version: v3 }
+
+  iiif_presentation_api.revalidation_directive_subscriber:
+    class: Drupal\iiif_presentation_api\EventSubscriber\RevalidationDirective
+    tags:
+      - { name: event_subscriber }
