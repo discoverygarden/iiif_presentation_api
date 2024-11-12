@@ -7,7 +7,10 @@ use Symfony\Component\HttpKernel\Event\ResponseEvent;
 use Symfony\Component\HttpKernel\KernelEvents;
 
 /**
- * Add 'must_revalidate' to IIIF-P manifests, for access control responsiveness.
+ * Add 'Cache-Control: no-cache' to IIIF-P manifests.
+ *
+ * So access control actions should take effect sooner, at the expense of more
+ * load on the server during general use.
  */
 class RevalidationDirective implements EventSubscriberInterface {
 
@@ -38,7 +41,7 @@ class RevalidationDirective implements EventSubscriberInterface {
     $response->headers->remove(static::HEADER);
 
     if ($response->isCacheable()) {
-      $response->setCache(['must_revalidate' => TRUE]);
+      $response->setCache(['no_cache' => TRUE]);
     }
   }
 
