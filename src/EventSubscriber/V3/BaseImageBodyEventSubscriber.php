@@ -16,7 +16,7 @@ class BaseImageBodyEventSubscriber implements EventSubscriberInterface {
    * Constructor.
    */
   public function __construct(
-    protected PluginManagerInterface $idPluginManager
+    protected PluginManagerInterface $idPluginManager,
   ) {
   }
 
