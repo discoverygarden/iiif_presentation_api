@@ -20,9 +20,10 @@ abstract class NormalizerBase extends SerializationNormalizerBase {
   /**
    * {@inheritDoc}
    */
-  public function normalize($object, $format = NULL, array $context = []) {
+  public function normalize($object, $format = NULL, array $context = []) : float|int|bool|\ArrayObject|array|string|null {
     // XXX: No-op fallback. We expect other implementers to define normalizers
     // with a higher priority.
+    return NULL;
   }
 
   /**
