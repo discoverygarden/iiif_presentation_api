@@ -10,6 +10,13 @@ use Drupal\serialization\Encoder\JsonEncoder;
 class IiifP extends JsonEncoder {
 
   /**
+   * The content type that this encoder supports.
+   *
+   * @var string
+   */
+  public const CONTENT_TYPE = 'application/ld+json;profile="http://iiif.io/api/presentation/3/context.json"';
+
+  /**
    * The format that this encoder supports.
    *
    * @var array
