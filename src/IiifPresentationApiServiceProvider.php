@@ -4,6 +4,7 @@ namespace Drupal\iiif_presentation_api;
 
 use Drupal\Core\DependencyInjection\ContainerBuilder;
 use Drupal\Core\DependencyInjection\ServiceModifierInterface;
+use Drupal\iiif_presentation_api\Encoder\V3\IiifP;
 use Symfony\Component\DependencyInjection\Reference;
 
 /**
@@ -18,7 +19,7 @@ class IiifPresentationApiServiceProvider implements ServiceModifierInterface {
     if ($container->has('http_middleware.negotiation') && is_a($container->getDefinition('http_middleware.negotiation')->getClass(), '\Drupal\Core\StackMiddleware\NegotiationMiddleware', TRUE)) {
       $container->getDefinition('http_middleware.negotiation')->addMethodCall('registerFormat', [
         'iiif-p-v3',
-        ['application/json'],
+        [IiifP::CONTENT_TYPE],
       ]);
     }
 

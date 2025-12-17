@@ -8,6 +8,7 @@ use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Render\RenderContext;
 use Drupal\Core\Render\RendererInterface;
 use Drupal\Core\Routing\RouteMatchInterface;
+use Drupal\iiif_presentation_api\Encoder\V3\IiifP;
 use Drupal\iiif_presentation_api\EventSubscriber\RevalidationDirective;
 use Drupal\serialization\Normalizer\CacheableNormalizerInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -71,6 +72,7 @@ class ManifestController extends ControllerBase {
           'Access-Control-Allow-Credentials' => 'true',
           'Access-Control-Allow-Origin' => '*',
           'Access-Control-Allow-Methods' => 'GET',
+          'Content-Type' => IiifP::CONTENT_TYPE,
         ],
         TRUE
       ))->addCacheableDependency($cache_meta);
