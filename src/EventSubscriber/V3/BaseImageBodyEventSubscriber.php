@@ -111,6 +111,7 @@ class BaseImageBodyEventSubscriber implements EventSubscriberInterface {
         'type' => 'ImageService1',
         'profile' => 'level2',
       ],
+      $event->getSize() === 'max' ? 'full' : NULL,
     ));
   }
 
@@ -127,7 +128,7 @@ class BaseImageBodyEventSubscriber implements EventSubscriberInterface {
         'type' => 'ImageService2',
         'profile' => 'level2',
       ],
-
+      $event->getSize() === 'max' ? 'full' : NULL,
     ));
   }
 
@@ -144,6 +145,7 @@ class BaseImageBodyEventSubscriber implements EventSubscriberInterface {
         'type' => 'ImageService3',
         'profile' => 'level2',
       ],
+      $event->getSize() === 'full' ? 'max' : NULL,
     ));
   }
 
